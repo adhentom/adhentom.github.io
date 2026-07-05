@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Audiowide, Geist, Geist_Mono, Pacifico, Space_Grotesk } from "next/font/google";
-import { cookies } from "next/headers";
 import "./globals.css";
 import "./pro-ui.css";
 
@@ -50,6 +49,14 @@ const interactionBootstrap = `
     });
   };
 
+  try {
+    const storedTheme = localStorage.getItem("portfolio-theme");
+    const preferredTheme = storedTheme === "dark" || storedTheme === "light"
+      ? storedTheme
+      : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(preferredTheme);
+  } catch {}
+
   document.addEventListener("click", (event) => {
     const themeButton = event.target && event.target.closest ? event.target.closest(".theme-toggle") : null;
     if (themeButton) {
@@ -87,20 +94,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const storedTheme = cookieStore.get("portfolio-theme")?.value;
-  const initialTheme = storedTheme === "dark" ? "dark" : "light";
-
   return (
     <html
       lang="en"
-      data-theme={initialTheme}
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${audiowide.variable} ${pacifico.variable} theme-${initialTheme}`}
+      data-theme="light"
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${audiowide.variable} ${pacifico.variable} theme-light`}
       suppressHydrationWarning
     >
       <body>
